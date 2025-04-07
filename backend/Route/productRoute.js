@@ -5,7 +5,7 @@ import {addProduct,getproduct,productdetial,productcartdetial,getWishlistByUserI
 
 
 ProductRoutes.post("/trendingproduct",upload.single("image"),addProduct);
-ProductRoutes.get("/trendingproduct/:userId",getproduct);
+ProductRoutes.get("/trendingproduct",getproduct);
 ProductRoutes.get("/product/:id",productdetial);
 ProductRoutes.get("/wishgproduct/:id",getWishlistByUserId) 
 ProductRoutes.post("/favorites",favorites );
@@ -16,7 +16,7 @@ ProductRoutes.delete("/cart/:userId/:productId",GetCartByUserIdAndProductId);
 ProductRoutes.post('/cart/:userId/add',CartAddByUser);
 ProductRoutes.put('/cart/:userId/decrease',CartdecreassByUser);
 ProductRoutes.delete("/cartclear/:userId",clearcart);
-ProductRoutes.get("/products/:userId",products);
+ProductRoutes.get("/products",products);
 ProductRoutes.get("/users", users);
 ProductRoutes.post('/products/details',productcartdetial);
 ProductRoutes.delete("/products/:id", productById);

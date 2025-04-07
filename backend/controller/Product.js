@@ -68,33 +68,46 @@ export const getproduct = async (req, res) => {
     const { category } = req.query;
     console.log(category,"category");
     
-    const userId = req.params.userId || null;
+    const userId =  req.query.userId ;
 
     console.log(userId,"userId");
     // Extract user from token (if authenticated)
+    if(userId){
+ // Fetch products based on category
+ let query = {};
+ if (category) query.category = category;
+ const products = await Product.find(query).sort({ createdAt: -1 });
+ console.log(products,"6788");
+ 
 
-    // Fetch products based on category
-    let query = {};
-    if (category) query.category = category;
-    const products = await Product.find(query).sort({ createdAt: -1 });
-    console.log(products,"6788");
-    
+ let favoriteSet = new Set();
+ if (userId) {
+   const favoriteProducts = await Favorite.find({ userId }).select("productId");
+   console.log(favoriteProducts,"favoriteProducts");
+   
+   favoriteSet = new Set(favoriteProducts.map((fav) => fav.productId.toString()));
+ }
 
-    let favoriteSet = new Set();
-    if (userId) {
-      const favoriteProducts = await Favorite.find({ userId }).select("productId");
-      console.log(favoriteProducts,"favoriteProducts");
-      
-      favoriteSet = new Set(favoriteProducts.map((fav) => fav.productId.toString()));
+ // Attach 'isLiked' status for authenticated users
+ const productsWithLikes = products.map((product) => ({
+   ...product.toObject(),
+   isLiked: userId ? favoriteSet.has(product._id.toString()) : false,
+ }));
+
+ res.json(productsWithLikes);
     }
+    else{
+      let query = {};
+ if (category) query.category = category;
+ const productsWithLikes = await Product.find(query).sort({ createdAt: -1 });
+ console.log(productsWithLikes,"6788");
+ 
 
-    // Attach 'isLiked' status for authenticated users
-    const productsWithLikes = products.map((product) => ({
-      ...product.toObject(),
-      isLiked: userId ? favoriteSet.has(product._id.toString()) : false,
-    }));
 
-    res.json(productsWithLikes);
+
+ res.json(productsWithLikes);
+    }
+   
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Server error", error });
@@ -342,27 +355,40 @@ export const GetCartByUserIdAndProductId= async (req, res) => {
   
 
   export const products=async (req, res) => {
-    const { category } = req.query;  
-    const user= req.params.userId
-      
+    console.log("hello");
+    
+    const  category  = req.query.category;  
+    console.log( category," category")
+    let user= req.query.userId;
+    console.log(user,"user");
+    
+    if (user === 'null' || user === null || user === undefined || user === '') {
+      user = null;  
+  }  
     
     try {
-      const products = await Product.find({ category }).sort({ createdAt: -1 }) ;
-      // console.log(products,"products");
+      if(!user){
+        const updatedProducts = await Product.find({ category }).sort({ createdAt: -1 }) ;
+        res.json(updatedProducts);
+      }
+      else{
+        const products = await Product.find({ category }).sort({ createdAt: -1 }) ;
+        // console.log(products,"products");
+        
+  
+        const favoriteProducts = await Favorite.find({  userId:user })
+        console.log(favoriteProducts,"favoriteProducts");
+        
+  
+        const favoriteProductIds = new Set(favoriteProducts.map(fav => fav.productId.toString()));
       
-
-      const favoriteProducts = await Favorite.find({  userId:user })
-      console.log(favoriteProducts,"favoriteProducts");
-      
-
-      const favoriteProductIds = new Set(favoriteProducts.map(fav => fav.productId.toString()));
-    
-      const updatedProducts = products.map(product => ({
-        ...product.toObject(),
-        isLiked: favoriteProductIds.has(product._id.toString()) 
-      }));
-
-      res.json(updatedProducts);
+        const updatedProducts = products.map(product => ({
+          ...product.toObject(),
+          isLiked: favoriteProductIds.has(product._id.toString()) 
+        }));
+  
+        res.json(updatedProducts);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Internal server error" });

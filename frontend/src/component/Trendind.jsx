@@ -31,7 +31,7 @@ export default function Trending() {
     }
     console.log(userId);
     
-    AxiosInstance.get(`/trendingproduct/${userId}`)
+    AxiosInstance.get(`/trendingproduct?userId=${userId}`)
       .then((response) => {
         const fetchedProducts = response.data.products || response.data;
         console.log(fetchedProducts,"fetchedProducts");
@@ -133,7 +133,12 @@ export default function Trending() {
                 <Heart size={28} fill={likedProducts[product._id] ? "red" : "white"} stroke={likedProducts[product._id] ? "red" : "gray"} />
               </button>
 
-              <img src={product.productImage} alt={product.name} className="w-full h-52 object-cover rounded-md shadow-md" />
+              <img 
+  src={product.productImage} 
+  alt={product.name} 
+  className="w-full h-52 object-cover rounded-md shadow-md" 
+  onClick={() => navigate(`/product/${product._id}`)}
+/>
 
               <div className="mt-4">
                 <h2 className="text-xl font-semibold text-gray-800">{product.name}</h2>
@@ -207,7 +212,7 @@ export default function Trending() {
             </div>
           ))
         ) : (
-          <p className="text-black text-center w-full">Loading products...</p>
+          <p className="text-black text-center w-full">Loading Not Found</p>
         )}
       </div>
     </div>

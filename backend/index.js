@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser()); 
 app.use(cors({
-    origin: "https://fullstack-ecommeres-3.onrender.com", 
+    origin: "http://localhost:5173", 
     methods: "GET,POST,PUT,DELETE", 
     credentials: true
   }));

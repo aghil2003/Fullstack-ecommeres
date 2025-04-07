@@ -65,6 +65,7 @@ const authSlice = createSlice({
       state.name = null;
       state.email = null;
       state.userId = null;
+      window.location.reload();
     },
     clearMessage: (state) => {
       state.successMessage = null;
@@ -113,3 +114,4 @@ export const { logout, clearMessage } = authSlice.actions;
 export default authSlice.reducer;
 
 
+  

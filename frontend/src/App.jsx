@@ -24,37 +24,37 @@ import ErrorPage from "./component/error";
 import PrivateRoute from "./component/PrivateRoute";
 import { Provider } from "react-redux";
 import store from "./redux/store";
-
+import ErrorFallback from './Pages/ErrorPage';
 const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
-  { path: "/register", element: <RegisterPage /> },
-  { path: "/verification", element: <VerificationPage /> },
-  { path: "/", element: <UserPage />},
-  { path: "/aboutpage", element: <AboutPage /> },
-  { path: "/products/:category", element: <CategoryPage /> },
+  { path: "/login", element: <LoginPage /> ,errorElement:<ErrorFallback /> },
+  { path: "/register", element: <RegisterPage />,errorElement:<ErrorFallback /> },
+  { path: "/verification", element: <VerificationPage />,errorElement:<ErrorFallback /> },
+  { path: "/", element: <UserPage />,errorElement:<ErrorFallback />},
+  { path: "/aboutpage", element: <AboutPage />,errorElement:<ErrorFallback /> },
+  { path: "/products/:category", element: <CategoryPage />},
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
-    children: [{ path: "/addresspage/:productId", element: <Address /> }],
+    children: [{ path: "/addresspage/:productId", element: <Address />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
-    children: [ { path: "/product/:id", element: <ProductDetail /> }],
+    children: [ { path: "/product/:id", element: <ProductDetail />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
-    children: [ { path: "/checkout/:productId", element: <CheckOut /> }],
+    children: [ { path: "/checkout/:productId", element: <CheckOut />,errorElement:<ErrorFallback /> ,}],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [ { path: "/dashbord", element: <AdminPage /> }],
+    children: [ { path: "/dashbord", element: <AdminPage />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
-    children: [ { path: "/checkout", element: <CheckOutCart  /> }],
+    children: [ { path: "/checkout", element: <CheckOutCart  />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
-    children: [ { path: "/orders", element: <OrderPage  /> }],
+    children: [ { path: "/orders", element: <OrderPage  />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
@@ -62,26 +62,26 @@ const router = createBrowserRouter([
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [{ path: "/userlistpage", element: <UserListPage /> }],
+    children: [{ path: "/userlistpage", element: <UserListPage />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [{ path: "/pending", element: <PendingPage /> }],
+    children: [{ path: "/pending", element: <PendingPage />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [{ path: "/shipping", element: <ShippedPage /> }],
+    children: [{ path: "/shipping", element: <ShippedPage />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [{ path: "/completed", element: <CompletedPage/> }],
+    children: [{ path: "/completed", element: <CompletedPage/>,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["User", "Admin"]} />,
     children: [
-      { path: "/cartpage", element: <CardPage /> },
-      { path: "/wishpage", element: <WishPage /> },
-      { path: "*", element: <ErrorPage /> },
+      { path: "/cartpage", element: <CardPage />,errorElement:<ErrorFallback /> },
+      { path: "/wishpage", element: <WishPage />,errorElement:<ErrorFallback /> },
+      { path: "*", element: <ErrorPage />,errorElement:<ErrorFallback /> },
     ],
   },
 

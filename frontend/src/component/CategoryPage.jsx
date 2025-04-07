@@ -14,23 +14,29 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [likedProducts, setLikedProducts] = useState({});
+  const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
 
   const token = Cookies.get("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.userId || decodedToken.id;
-  console.log(userId,"userId");
-   
+  let userId = null;
+  
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    userId = decodedToken.userId || decodedToken.id;
+    console.log(userId, "userId");
+  }
+    
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axiosInstance.get(`/products/${userId}?category=${category}`)
-        console.log(response.data,"response.data");
-        
-        setProducts(response.data);
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const response = await axiosInstance.get(`/products?userId=${userId}&category=${category}`);
+          console.log(response.data,"response.data");
+          
+          setProducts(response.data);
 
         if (userId) {
           const likedState = response.data.reduce((acc, product) => {
@@ -101,76 +107,224 @@ export default function ProductsPage() {
       }));
     }
   };
+
+  const handleAddToCart = () => {
+    if (!userId) {
+      Swal.fire({
+        icon: "error",
+        title: "Authentication Required",
+        text: "Please log in to add items to the cart.",
+      });
+      return;
+    }
+
+    const cartItem = {
+      userId,
+      productId: product._id,
+      size: selectedSize,
+      quantity,
+    };
+
+    AxiosInstance.post("/cart", cartItem)
+      .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Added to Cart!",
+          text: "The product has been added to your cart successfully.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      })
+      .catch((error) => {
+        console.error("Error adding to cart:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Failed to Add",
+          text: "Something went wrong. Please try again later.",
+        });
+      });
+  };
   
   return (
-    <div className="w-[100%]">
-      <h2 className="text-2xl font-bold">
-        {category === "men" ? "Men's Products" : "Women's Products"}
-      </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+    {loading ? (
+      <p>Loading...</p>
+    ) : error ? (
+      <p className="text-red-500">{error}</p>
+    ) : (
+      products.map((product) => (
+        <div
+          key={product._id}
+          className="bg-white w-full sm:w-full p-4 shadow-lg rounded-lg flex flex-col justify-between relative"
+        >
+          <img
+            src={product.productImage}
+            alt={product.name}
+            className="w-full h-[220px] object-cover rounded-lg shadow-md"
+            onClick={() => navigate(`/product/${product._id}`)}
+          />
+          <div className="flex items-center justify-between mt-4">
+            <h1 className="text-xl font-semibold text-gray-800">{product.name}</h1>
+            <p className="text-lg font-medium text-blue-600">${product.price}</p>
+          </div>
+          <p className="text-gray-600 mt-2 text-sm">{product.description}</p>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      <div className="flex flex-wrap gap-4 w-[90%] m-auto">
-        {products.length > 0 ? (
-          products.map((product) => (
-            <div
-              key={product._id}
-              className="bg-white w-[30%] h-[400px] p-4 shadow-lg rounded-lg flex flex-col justify-between relative"
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={() => toggleLike(product._id)}
+              className={`p-2 rounded-full ${likedProducts[product._id] ? "text-red-500" : "text-gray-400"}`}
             >
-              <button
-                className="absolute top-2 right-2 p-1 rounded-full shadow-md hover:text-red-500 transition"
-                onClick={() => toggleLike(product._id)}
-              >
-                <Heart
-                  size={24}
-                  fill={likedProducts[product._id] ? "red" : "none"}
-                  stroke={likedProducts[product._id] ? "red" : "gray"}
-                />
-              </button>
+              <Heart fill={likedProducts[product._id] ? "red" : "none"} />
+            </button>
+            <button
+              onClick={() => navigate(`/product/${product._id}`)}
+              className="text-blue-500 hover:underline"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+      );
+    }
+//     <div className="w-[100%]">
+      // <h2 className="text-2xl font-bold">
+      //   {category === "men" ? "Men's Products" : "Women's Products"}
+      // </h2>
 
-              <img
-                src={product.productImage}
-                alt={product.name}
-                className="w-full h-[200px] mt-[30px] object-cover rounded-md cursor-pointer"
-                onClick={() => navigate(`/product/${product._id}`)}
-              />
+      // {/* {loading && <p>Loading...</p>}
+      // {error && <p className="text-red-500">{error}</p>} */}
 
-              <div>
-                <h2 className="text-lg font-bold mt-2">{product.name}</h2>
-                <p className="text-gray-700">Price: ${product.price}</p>
-                <p className="text-sm text-gray-500">{product.description}</p>
-              </div>
+//       <div className="flex flex-wrap gap-4 w-[90%] m-auto">
+//         {products.length > 0 ? (
+//           products.map((product) => (
+//             <div
+//               key={product._id}
+//               className="bg-white w-[30%] p-4 shadow-lg rounded-lg flex flex-col justify-between relative"
+//             >
+//               <button
+//                 className="absolute top-2 right-2 p-1 rounded-full shadow-md hover:text-red-500 transition"
+//                 onClick={() => toggleLike(product._id)}
+//               >
+//                 <Heart
+//                   size={24}
+//                   fill={likedProducts[product._id] ? "red" : "none"}
+//                   stroke={likedProducts[product._id] ? "red" : "gray"}
+//                 />
+//               </button>
 
-              <button
-                className="mt-3 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
-                onClick={() => {
-                  if (!userId) {
-                    Swal.fire({
-                      icon: "error",
-                      title: "Authentication Required",
-                      text: "Please log in to buy this product.",
-                      showConfirmButton: true,
-                      confirmButtonText: "Login",
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        navigate("/login");
-                      }
-                    });
-                  } else {
-                    navigate(`/addresspage/${product._id}`);
+//               <img
+//                src={product.productImage}
+//                alt={product.name}
+//                className="w-full h-auto mt-[30px] object-cover rounded-md cursor-pointer"
+//                onClick={() => navigate(`/product/${product._id}`)}
+//               />
+
+
+//               <div>
+//                 <h2 className="text-lg font-bold mt-2">{product.name}</h2>
+//                 <p className="text-gray-700">Price: ${product.price}</p>
+//                 <p className="text-sm text-gray-500">{product.description}</p>
+//               </div>
+
+//               <button
+//                 className="mt-3 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+//                 onClick={() => {
+//                   if (!userId) {
+//                     Swal.fire({
+//                       icon: "error",
+//                       title: "Authentication Required",
+//                       text: "Please log in to buy this product.",
+//                       showConfirmButton: true,
+//                       confirmButtonText: "Login",
+//                     }).then((result) => {
+//                       if (result.isConfirmed) {
+//                         navigate("/login");
+//                       }
+//                     });
+//                   } else {
+//                     navigate(`/addresspage/${product._id}`);
+//                   }
+//                 }}
+//               >
+//                 Buy Now
+//               </button>
+//             </div>
+//           ))
+//         ) : (
+//           <p className="text-black text-center w-full">No products found.</p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+{/* <div className="w-full">
+  <h2 className="text-2xl font-bold">
+    {category === "men" ? "Men's Products" : "Women's Products"}
+  </h2>
+
+  <div className="flex flex-wrap gap-4 w-[90%] m-auto">
+    {products.length > 0 ? (
+      products.map((product) => (
+        <div
+          key={product._id}
+          className="bg-white w-full sm:w-1/3 md:w-1/4 lg:w-1/4 p-4 shadow-lg rounded-lg flex flex-col justify-between relative"
+        >
+          <button
+            className="absolute top-2 right-2 p-1 rounded-full shadow-md hover:text-red-500 transition"
+            onClick={() => toggleLike(product._id)}
+          >
+            <Heart
+              size={24}
+              fill={likedProducts[product._id] ? "red" : "none"}
+              stroke={likedProducts[product._id] ? "red" : "gray"}
+            />
+          </button>
+
+          <img
+            src={product.productImage}
+            alt={product.name}
+            className="w-full h-auto mt-[30px] object-cover rounded-md cursor-pointer"
+            onClick={() => navigate(`/product/${product._id}`)}
+          />
+
+          <div>
+            <h2 className="text-lg font-bold mt-2">{product.name}</h2>
+            <p className="text-gray-700">Price: ${product.price}</p>
+            <p className="text-sm text-gray-500">{product.description}</p>
+          </div>
+
+          <button
+            className="mt-3 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+            onClick={() => {
+              if (!userId) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Authentication Required",
+                  text: "Please log in to buy this product.",
+                  showConfirmButton: true,
+                  confirmButtonText: "Login",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    navigate("/login");
                   }
-                }}
-              >
-                Buy Now
-              </button>
-            </div>
-          ))
-        ) : (
-          <p className="text-black text-center w-full">No products found.</p>
-        )}
-      </div>
-    </div>
+                });
+              } else {
+                navigate(`/addresspage/${product._id}`);
+              }
+            }}
+          >
+            Buy Now
+          </button>
+        </div>
+      ))
+    ) : (
+      <p className="text-black text-center w-full">No products found.</p>
+    )}
+  </div>
+</div>
   );
-}
-
+} */}
