@@ -212,7 +212,7 @@ export default function Trending() {
             </div>
           ))
         ) : (
-          <p className="text-black text-center w-full">Loading Not Found</p>
+          <p className="text-black text-center w-full">Not Found</p>
         )}
       </div>
     </div>
