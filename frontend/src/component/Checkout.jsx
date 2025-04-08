@@ -143,7 +143,7 @@ export default function CheckOut() {
                       if (result.data.success) {
                           console.log("Order saved successfully!");
                           Swal.fire("Success", "Your order has been saved.", "success");
-                          navigate("/orders"); // Navigate to order history
+                          navigate("/orders");  
                       } else {
                           console.error("Failed to save order.");
                           Swal.fire("Error", "Failed to save order.", "error");
