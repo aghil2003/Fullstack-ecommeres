@@ -26,7 +26,7 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import ErrorFallback from './Pages/ErrorPage';
 const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> ,errorElement:<ErrorFallback /> },
+  { path: "/login", element: <LoginPage /> ,},
   { path: "/register", element: <RegisterPage />,errorElement:<ErrorFallback /> },
   { path: "/verification", element: <VerificationPage />,errorElement:<ErrorFallback /> },
   { path: "/", element: <UserPage />,errorElement:<ErrorFallback />},
