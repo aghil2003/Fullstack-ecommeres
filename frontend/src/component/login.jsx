@@ -56,7 +56,7 @@ export default function LoginPage() {
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">Login</h2>
         {error && (
   <p className="text-center text-sm text-red-500">
-    {typeof error === "string" ? error : error.message || "An error occurred"}
+    {typeof error === "string" ? error : error.message || "Something went wrong"}
   </p>
 )}
 

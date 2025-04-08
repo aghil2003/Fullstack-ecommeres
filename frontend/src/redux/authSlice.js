@@ -27,7 +27,8 @@ export const loginUser = createAsyncThunk("auth/login", async ({ email, password
     const decodedToken = jwtDecode(token);
     return { token, role: decodedToken.role, name: decodedToken.name, userId: decodedToken.userId, email: decodedToken.email };
   } catch (error) {
-    return rejectWithValue(error.response?.data || "Invalid credentials");
+    return rejectWithValue(error.response?.data?.message || "Invalid credentials");
+
   }
 });
 
