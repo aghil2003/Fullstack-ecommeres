@@ -21,6 +21,7 @@ export const loginUser = createAsyncThunk("auth/login", async ({ email, password
   try {
     const response = await axiosInstance.post("/login", { email, password });
     const token = response.data.token;
+    
     Cookies.set("token", token, { expires: 7 });
 
     const decodedToken = jwtDecode(token);
@@ -39,7 +40,10 @@ export const registerUser = createAsyncThunk("auth/register", async ({ name, ema
     const decodedToken = jwtDecode(token);
     return { token, role: decodedToken.role, name: decodedToken.name, userId: decodedToken.userId, email: decodedToken.email };
   } catch (error) {
-    return rejectWithValue(error.response?.data || "Registration failed");
+    return rejectWithValue(
+      error.response?.data?.message || "Invalid credentials"
+    );
+    
   }
 });
 
