@@ -23,7 +23,8 @@ import CompletedPage from "./Pages/Completedpage"
 import ErrorPage from "./component/error";
 import PrivateRoute from "./component/PrivateRoute";
 import { Provider } from "react-redux";
-import store from "./redux/store";
+import { store, persistor } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 import ErrorFallback from './Pages/ErrorPage';
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage />,errorElement:<ErrorFallback />},
@@ -88,12 +89,23 @@ const router = createBrowserRouter([
  
 ]);
 
+// function App() {
+//   return (
+//     <Provider store={store}>
+//       <RouterProvider router={router} />
+//     </Provider>
+//   );
+// }
+
 function App() {
   return (
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
     </Provider>
   );
 }
+
 
 export default App;
