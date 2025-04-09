@@ -75,6 +75,11 @@ const OrderSchema = new mongoose.Schema({
         enum: ["Pending", "Completed", "Failed"],
         default: "Pending",
     },
+    orderstatus: {
+        type: String,
+        enum: ["Pending", "Completed", "Failed"],
+        default: "Pending",
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -91,7 +96,7 @@ OrderSchema.pre("save", async function (next) {
         );
 
         const paddedNumber = counter.value.toString().padStart(2, "0");
-        this.orderId = `trentnext${paddedNumber}`;
+        this.orderId = `TrendNext${paddedNumber}`;
     }
     next();
 });

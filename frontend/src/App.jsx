@@ -26,12 +26,12 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import ErrorFallback from './Pages/ErrorPage';
 const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> ,},
+  { path: "/login", element: <LoginPage />,errorElement:<ErrorFallback />},
   { path: "/register", element: <RegisterPage />,errorElement:<ErrorFallback /> },
   { path: "/verification", element: <VerificationPage />,errorElement:<ErrorFallback /> },
   { path: "/", element: <UserPage />,errorElement:<ErrorFallback />},
   { path: "/aboutpage", element: <AboutPage />,errorElement:<ErrorFallback /> },
-  { path: "/products/:category", element: <CategoryPage />},
+  { path: "/products/:category", element: <CategoryPage />,errorElement:<ErrorFallback />},
   {
     element: <PrivateRoute allowedRoles={["User"]} />,
     children: [{ path: "/addresspage/:productId", element: <Address />,errorElement:<ErrorFallback /> }],
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,
-    children: [{ path: "/adminproducts/:category", element: <AdminCategoryPage /> }],
+    children: [{ path: "/adminproducts/:category", element: <AdminCategoryPage />,errorElement:<ErrorFallback /> }],
   },
   {
     element: <PrivateRoute allowedRoles={["Admin"]} />,

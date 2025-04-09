@@ -71,11 +71,9 @@ function Otp() {
       const response = await axiosInstance.post("/verification", { email, otp });
   
       if (response.data.success) {
-        // Decode the token to get the user's role
         const decodedToken = jwtDecode(token);
         console.log(decodedToken, "Decoded Token...");
   
-        // Navigate based on role
         if (decodedToken.role === "Admin") {
           Swal.fire({
             title: "Verification Successful!",
@@ -85,7 +83,6 @@ function Otp() {
           }).then(() => {
             navigate("/dashbord");
           });
-          // navigate("/adminpage");
         } else {
           Swal.fire({
             title: "Verification Successful!",
@@ -95,7 +92,6 @@ function Otp() {
           }).then(() => {
             navigate("/");
           });
-          // navigate("/userpage");
         }
       } else {
         seterror(response.data.message || "Invalid OTP. Try again.");
@@ -113,12 +109,10 @@ function Otp() {
     e.preventDefault();
 
     if (!token || !email) {
-      // alert("Session expired. Please log in again.");
       return;
     }
-
-    setResendDisabled(true); // Disable button for another 60 sec
-    setTimer(60); // Reset the timer to 60 sec
+    setResendDisabled(true); 
+    setTimer(60); 
 
     try {
       console.log(token,"token test");

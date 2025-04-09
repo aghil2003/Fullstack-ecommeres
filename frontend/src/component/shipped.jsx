@@ -6,7 +6,6 @@ export default function Shipped() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Asynchronous function to fetch data
         const fetchShippedOrders = async () => {
             try {
                 const response = await axiosInstance.get("/shipped");
@@ -19,17 +18,15 @@ export default function Shipped() {
         fetchShippedOrders();
     }, []);
 
-    // Function to handle status update
+    
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
             setLoading(true);
-            // Sending a PUT request to the backend to update the status
             const response = await axiosInstance.put(`/order/${orderId}/status`, {
                 status: newStatus
             });
 
             if (response.status === 200) {
-                // Update the local state with the new status
                 setProduct((prevProduct) =>
                     prevProduct.map((order) =>
                         order._id === orderId ? { ...order, status: newStatus } : order

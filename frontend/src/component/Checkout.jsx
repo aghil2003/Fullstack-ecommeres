@@ -101,73 +101,94 @@ export default function CheckOut() {
         }
     };
     
+  
+const checkoutPayment = async (order) => {
+    console.log("order:", order);
+    let orderId = "";
 
-    const checkoutPayment = async (order) => {
-      console.log("order:", order);
-  
-      const options = {
-          key: "rzp_test_ZKcJLyt29WoYex",
-          amount: order.amount,
-          currency: order.currency,
-          name: "VINERGO",
-          description: "Thank you for shopping with us!",
-          order_id: order.id,
-          handler: async function (response) {
-              Swal.fire({
-                  title: "Booking Confirmed!",
-                  text: "Your order has been successfully placed.",
-                  icon: "success",
-                  confirmButtonColor: "#3085d6",
-                  confirmButtonText: "OK",
-              }).then(async () => {
-                  // Prepare order details to save in the database
-                  const orderData = {
-                      useremail:email,  
-                      address: selectedAddress,
-                      productId: product._id,
-                      quantity: quantity, 
-                      size:size,
-                      totalAmount: TotalPrice,
-                      payment: {
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                      },
-                      status: "Pending",
-                  };
-                  console.log(orderData,"orderData");
-                  
-  
-                  try {    
-                      const result = await axiosInstance.post("/orders", orderData);
-                      if (result.data.success) {
-                          console.log("Order saved successfully!");
-                          Swal.fire("Success", "Your order has been saved.", "success");
-                          navigate("/orders");  
-                      } else {
-                          console.error("Failed to save order.");
-                          Swal.fire("Error", "Failed to save order.", "error");
-                      }
-                  } catch (error) {
-                      console.error("Error saving order:", error);
-                  }
-              });
-          },
-          prefill: {
-              name: name,
-              email: email,
-              contact: "6282717057",
-          },
-          theme: {
-              color: "#AF6900",
-          },
-      };
-  
-      const razorpay = new Razorpay(options);
-      razorpay.open();
-  };
-  
-      
+    const orderData = {
+        useremail: email,
+        address: selectedAddress,
+        productId: product,
+        totalAmount: TotalPrice,
+        status: "Pending",
+        orderstatus:"Pending" 
+    };
+
+    try {
+        const result = await axiosInstance.post("/orders", orderData);
+        console.log(result.data, "result");
+
+        if (result.data.success) {
+            // Get the orderId from the response
+            orderId = result.data.order._id; // Ensure the response has `order` object with `_id`
+            console.log(orderId, "orderId");
+        } else {
+            throw new Error("Failed to save order.");
+        }
+    } catch (error) {
+        console.error("Error saving order:", error);
+        Swal.fire("Error", "Failed to save order.", "error");
+        return;
+    }
+
+    const options = {
+        key: "rzp_test_ZKcJLyt29WoYex",
+        amount: order.amount,
+        currency: order.currency,
+        name: "VINERGO",
+        description: "Thank you for shopping with us!",
+        order_id: order.id, // Razorpay Order ID
+        handler: async function (response) {
+            Swal.fire({
+                title: "Booking Confirmed!",
+                text: "Your order has been successfully placed.",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then(async () => {
+                const paymentDetails = {
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                };
+
+                try {
+                    const updateResult = await axiosInstance.put(`/orders/${orderId}`, {
+                        orderstatus: "Completed",
+                        paymentDetails,
+                    });
+
+                    if (updateResult.data.success) {
+                        console.log("Order completed successfully!");
+
+                        Swal.fire("Success", "Your order has been saved and payment completed.", "success");
+                       
+                        navigate("/orders", { replace: true });
+                        window.location.reload();
+                    } else {
+                        throw new Error("Failed to update order status.");
+                    }
+                } catch (error) {
+                    console.error("Error updating order status:", error);
+                    Swal.fire("Error", "Failed to complete the order.", "error");
+                }
+            });
+        },
+        prefill: {
+            name: name,
+            email: email,
+            contact: "6282717057", 
+        },
+        theme: {
+            color: "#AF6900",
+        },
+    };
+
+    const razorpay = new Razorpay(options);
+    razorpay.open();
+};
+
     
       const newBooking = async () => {
         try {
@@ -177,8 +198,7 @@ export default function CheckOut() {
           });
           if (response) {
             await checkoutPayment(response.data.order);
-            // change order status ton completed
-            
+          
           }
         } catch (error) {
           console.error(error);
@@ -268,3 +288,5 @@ export default function CheckOut() {
         </div>
     );
 }
+
+

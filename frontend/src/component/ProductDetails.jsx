@@ -8,19 +8,26 @@ import Swal from "sweetalert2";
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
     AxiosInstance.get(`/product/${id}`)
       .then((response) => {
         setProduct(response.data);
+        setError(null);
       })
       .catch((error) => {
         console.error("Error fetching product details:", error);
-      });
+        setError("The product you are looking for does not exist.");
+      })
+      .finally(() => setLoading(false));
 
     const token = Cookies.get("token");
     if (token) {
@@ -70,11 +77,19 @@ export default function ProductDetails() {
       });
   };
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-medium text-gray-600">Loading product...</p>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-4xl font-bold text-red-600">Product Not Found</h1>
-        <p className="text-gray-700 mt-2">The product you are looking for does not exist.</p>
+        <p className="text-gray-700 mt-2">{error}</p>
         <button
           onClick={() => navigate("/")}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
@@ -87,7 +102,11 @@ export default function ProductDetails() {
 
   return (
     <div className="max-w-[400px] h-auto mx-auto mt-4 p-4 rounded-lg border border-gray-300 shadow-lg bg-white">
-      <img src={product.productImage} alt={product.name} className="w-full h-[220px] object-cover rounded-lg shadow-md" />
+      <img
+        src={product.productImage}
+        alt={product.name}
+        className="w-full h-[220px] object-cover rounded-lg shadow-md"
+      />
       <div className="flex items-center justify-between mt-4">
         <h1 className="text-2xl font-semibold text-gray-800">{product.name}</h1>
         <p className="text-lg font-medium text-blue-600">${product.price}</p>
@@ -95,8 +114,8 @@ export default function ProductDetails() {
       <p className="text-gray-600 mt-2 text-sm">{product.description}</p>
 
       <div className="mt-4">
-           <label className="block text-lg font-medium text-gray-700">Select Size:</label>
-           <select
+        <label className="block text-lg font-medium text-gray-700">Select Size:</label>
+        <select
           className="mt-2 p-2 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
           value={selectedSize}
           onChange={(e) => setSelectedSize(e.target.value)}
@@ -139,12 +158,16 @@ export default function ProductDetails() {
         <div className="flex gap-4 mt-6">
           <button
             className={`w-1/2 py-2 px-4 rounded-lg text-lg font-medium transition ${
-              selectedSize ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md" : "bg-gray-400 text-gray-700 cursor-not-allowed"
+              selectedSize
+                ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                : "bg-gray-400 text-gray-700 cursor-not-allowed"
             }`}
             disabled={!selectedSize}
             onClick={() => {
               if (selectedSize) {
-                navigate(`/checkout/${product._id}`);
+                navigate(`/checkout/${product._id}`, {
+                  state: { size: selectedSize, quantity },
+                });
               }
             }}
           >
@@ -154,7 +177,9 @@ export default function ProductDetails() {
           <button
             onClick={handleAddToCart}
             className={`w-1/2 py-2 px-4 rounded-lg text-lg font-medium transition ${
-              selectedSize ? "bg-green-500 text-white hover:bg-green-600 shadow-md" : "bg-gray-400 text-gray-700 cursor-not-allowed"
+              selectedSize
+                ? "bg-green-500 text-white hover:bg-green-600 shadow-md"
+                : "bg-gray-400 text-gray-700 cursor-not-allowed"
             }`}
             disabled={!selectedSize}
           >

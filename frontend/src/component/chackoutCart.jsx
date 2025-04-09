@@ -93,6 +93,32 @@ export default function CheckOut() {
 
     const checkoutPayment = async (order) => {
         console.log("order:", order);
+        let orderId = "";
+    
+        const orderData = {
+            useremail: email,
+            address: selectedAddress,
+            productId: product,
+            totalAmount: totalAmount,
+            status: "Pending",
+            orderstatus:"Pending" 
+        };
+    
+        try {
+            const result = await axiosInstance.post("/orders", orderData);
+            console.log(result.data, "result");
+    
+            if (result.data.success) {
+                orderId = result.data.order._id;
+                console.log(orderId, "orderId");
+            } else {
+                throw new Error("Failed to save order.");
+            }
+        } catch (error) {
+            console.error("Error saving order:", error);
+            Swal.fire("Error", "Failed to save order.", "error");
+            return;
+        }
     
         const options = {
             key: "rzp_test_ZKcJLyt29WoYex",
@@ -100,7 +126,7 @@ export default function CheckOut() {
             currency: order.currency,
             name: "VINERGO",
             description: "Thank you for shopping with us!",
-            order_id: order.id,
+            order_id: order.id, 
             handler: async function (response) {
                 Swal.fire({
                     title: "Booking Confirmed!",
@@ -109,47 +135,44 @@ export default function CheckOut() {
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
                 }).then(async () => {
-                    const orderData = {
-                        useremail: email,
-                        address: selectedAddress,
-                        productId: product,
-                        totalAmount: totalAmount,
-                        payment: {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                        },
-                        status: "Pending",
+                    const paymentDetails = {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
                     };
     
                     try {
-                        // Save order to backend
-                        const result = await axiosInstance.post("/orders", orderData);
-                        if (result.data.success) {
+                        const updateResult = await axiosInstance.put(`/orders/${orderId}`, {
+                            orderstatus: "Completed",
+                            paymentDetails,
+                        });
+    
+                        if (updateResult.data.success) {
                             console.log("Order saved successfully!");
                             const token = Cookies.get("token");
                             const decodedToken = jwtDecode(token);
                             const userId = decodedToken.userId || decodedToken.id;
                             console.log(userId,"345rtyu");
-                            
+                                                    
                             await axiosInstance.delete(`/cartclear/${userId}`);  
                             dispatch(fetchCart()); 
-    
-                            Swal.fire("Success", "Your order has been saved.", "success");
-                            navigate("/orders");
+                            
+                            Swal.fire("Success", "Your order has been saved.", "success")
+                            navigate("/orders", { replace: true }); 
+                            window.location.reload();
                         } else {
-                            console.error("Failed to save order.");
-                            Swal.fire("Error", "Failed to save order.", "error");
+                            throw new Error("Failed to update order status.");
                         }
                     } catch (error) {
-                        console.error("Error saving order:", error);
+                        console.error("Error updating order status:", error);
+                        Swal.fire("Error", "Failed to complete the order.", "error");
                     }
                 });
             },
             prefill: {
                 name: name,
                 email: email,
-                contact: "6282717057",
+                contact: "6282717057", 
             },
             theme: {
                 color: "#AF6900",
@@ -169,7 +192,6 @@ export default function CheckOut() {
           });
           if (response) {
             await checkoutPayment(response.data.order);
-            // change order status ton completed
             
           }
         } catch (error) {

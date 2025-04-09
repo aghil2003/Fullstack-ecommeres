@@ -3,7 +3,7 @@ import axiosInstance from "../axios/axiosInstance";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
-// Get user ID from token
+
 const token = Cookies.get("token");
 let userId = null;
 if (token) {
@@ -15,7 +15,6 @@ if (token) {
   }
 }
 
-// Fetch products based on category
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (category, { rejectWithValue }) => {
@@ -31,7 +30,7 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
-// Toggle like functionality
+
 export const toggleLike = createAsyncThunk(
   "products/toggleLike",
   async ({ productId, isLiked }, { rejectWithValue }) => {
@@ -39,7 +38,6 @@ export const toggleLike = createAsyncThunk(
       return rejectWithValue("Authentication Required");
     }
     try {
-      // Toggle like (remove from favorites if already liked, add if not liked)
       if (isLiked) {
         await axiosInstance.delete(`/favorites/${productId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -54,7 +52,7 @@ export const toggleLike = createAsyncThunk(
           }
         );
       }
-      return { productId, isLiked: !isLiked }; // Return updated productId and isLiked status
+      return { productId, isLiked: !isLiked }; 
     } catch (error) {
       return rejectWithValue("Error updating favorite.");
     }
@@ -79,7 +77,6 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload;
-        // Initialize likedProducts based on the products' isLiked status
         state.likedProducts = action.payload.reduce((acc, product) => {
           acc[product._id] = product.isLiked;
           return acc;
@@ -90,7 +87,6 @@ const productsSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(toggleLike.fulfilled, (state, action) => {
-        // Update the likedProducts state with the new like status
         state.likedProducts[action.payload.productId] = action.payload.isLiked;
       })
       .addCase(toggleLike.rejected, (state, action) => {

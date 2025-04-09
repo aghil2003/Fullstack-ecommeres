@@ -6,7 +6,6 @@ export default function Pending() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Asynchronous function to fetch data
         const fetchPendingOrders = async () => {
             try {
                 const response = await axiosInstance.get("/pending");
@@ -19,17 +18,14 @@ export default function Pending() {
         fetchPendingOrders();
     }, []);
 
-    // Function to handle status update
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
             setLoading(true);
-            // Sending a PUT request to the backend to update the status
             const response = await axiosInstance.put(`/order/${orderId}/status`, {
                 status: newStatus
             });
 
             if (response.status === 200) {
-                // Update the local state with the new status
                 setProduct((prevProduct) =>
                     prevProduct.map((order) =>
                         order._id === orderId ? { ...order, status: newStatus } : order
@@ -39,7 +35,7 @@ export default function Pending() {
         } catch (error) {
             console.error("Error updating order status:", error);
         } finally {
-            setLoading(false); // Reset loading state after the update is complete
+            setLoading(false); 
         }
     };
 
@@ -71,7 +67,7 @@ export default function Pending() {
                             <p className="text-md text-blue-600"><strong>User Email:</strong> {order.useremail}</p>
 
                             {/* Buttons to update status */}
-                            {order.status === "pending" && (
+                            {order.status === "Pending" && (
                                 <div className="mt-4 flex space-x-4">
                                     <button
                                         onClick={() => updateOrderStatus(order._id, "shipped")}
