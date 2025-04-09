@@ -237,7 +237,8 @@ export default function HeroContainer() {
           animate={{ x: "0%", opacity: 1 }}
           exit={{ x: "-100%", opacity: 0 }}
           transition={{ duration: 1.5 }}
-          className="absolute inset-0 object-cover w-full h-full"
+          className="absolute inset-0 w-[600px] h-full left-1/2 -translate-x-1/2"
+
         />
       </AnimatePresence>
 
