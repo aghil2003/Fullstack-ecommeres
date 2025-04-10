@@ -89,23 +89,23 @@ const router = createBrowserRouter([
  
 ]);
 
-// function App() {
-//   return (
-//     <Provider store={store}>
-//       <RouterProvider router={router} />
-//     </Provider>
-//   );
-// }
-
 function App() {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <RouterProvider router={router} />
-      </PersistGate>
+      <RouterProvider router={router} />
     </Provider>
   );
 }
+
+// function App() {
+//   return (
+//     <Provider store={store}>
+//       <PersistGate loading={null} persistor={persistor}>
+//         <RouterProvider router={router} />
+//       </PersistGate>
+//     </Provider>
+//   );
+// }
 
 
 export default App;

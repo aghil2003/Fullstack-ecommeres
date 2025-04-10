@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ function Header() {
         const decodedToken = jwtDecode(usertoken);
         const userId = decodedToken.userId || decodedToken.id || null;
         console.log(userId, "userId test");
-        setUserId(userId); // Correct state update
+        setUserId(userId); 
       } catch (error) {
         console.error("Error decoding token:", error);
       }
