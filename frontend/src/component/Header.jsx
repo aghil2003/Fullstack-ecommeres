@@ -5,7 +5,7 @@ import { Heart, ShoppingCart, Settings } from "lucide-react";
 import { Menu as MenuIcon } from "lucide-react";
 
 import Swal from "sweetalert2";
-import { logout } from "../redux/authSlice";
+import { logoutUser } from "../redux/authSlice";
 import { fetchWishlist } from "../redux/wishlistSlice";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -63,7 +63,7 @@ function Header() {
       confirmButtonText: "Yes, Logout!",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(logout());
+        dispatch(logoutUser());
         setIsOpen(false);
         navigate("/");
         Swal.fire("Logged Out!", "You have been logged out successfully.", "success");

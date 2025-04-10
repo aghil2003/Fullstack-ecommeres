@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/authSlice"; 
+import { logoutUser } from "../redux/authSlice"; 
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Img1 from "../assets/boy.jpg";
@@ -78,7 +78,7 @@ export default function HeroContainer() {
       confirmButtonText: "Yes, log me out!",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(logout());
+        dispatch(logoutUser());
         setIsOpen(false);
         navigate("/");
   
