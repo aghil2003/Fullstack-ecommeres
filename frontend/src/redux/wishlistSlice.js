@@ -73,6 +73,12 @@ const wishlistSlice = createSlice({
           state.products.push(action.payload);
           state.likedProducts[action.payload._id] = true;
         }
+      })
+      .addCase(logout.type, (state) => {
+        state.products = [];
+        state.likedProducts = {};
+        state.status = "idle";
+        state.error = null;
       });
   },
 });

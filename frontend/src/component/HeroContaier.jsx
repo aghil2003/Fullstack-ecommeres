@@ -15,26 +15,15 @@ export default function HeroContainer() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token,name } = useSelector((state) => state.auth); 
-  
+  const wishlistCount = useSelector((state) => state.wishlist.products.length);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [wishlistCount,setwishlistCount]=(null);
   const images = [Img1, Img2];
   const texts = ["New Trend for Mens", "New Trend for Girls"];
   const [currentIndex, setCurrentIndex] = useState(0);
   const location = useLocation();
-
-  const countWish= useSelector((state) => state.wishlist.products.length);
-
-  if(countWish){
-    setwishlistCount(countWish)
-  }
-  else{
-    const num=0
-    setwishlistCount(num);
-  }
  
   useEffect(() => {
       
