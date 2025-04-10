@@ -159,7 +159,7 @@ export default function CheckOut() {
                             
                             Swal.fire("Success", "Your order has been saved.", "success")
                             navigate("/orders", { replace: true }); 
-                            window.location.reload();
+                            // window.location.reload();
                         } else {
                             throw new Error("Failed to update order status.");
                         }

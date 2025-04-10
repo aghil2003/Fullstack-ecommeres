@@ -23,8 +23,7 @@ import CompletedPage from "./Pages/Completedpage"
 import ErrorPage from "./component/error";
 import PrivateRoute from "./component/PrivateRoute";
 import { Provider } from "react-redux";
-import { store, persistor } from "./redux/store";
-import { PersistGate } from "redux-persist/integration/react";
+import { store } from "./redux/store";
 import ErrorFallback from './Pages/ErrorPage';
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage />,errorElement:<ErrorFallback />},
