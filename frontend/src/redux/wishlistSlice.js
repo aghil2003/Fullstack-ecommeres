@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AxiosInstance from "../axios/axiosInstance";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { logout } from "../redux/authSlice"; 
 
 
 export const fetchWishlist = createAsyncThunk("wishlist/fetchWishlist", async (_, { rejectWithValue }) => {
