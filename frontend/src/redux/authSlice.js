@@ -134,7 +134,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../axios/axiosInstance";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { persistor } from "../redux/store";
+import { persistor } from "../redux/store.js";
 
 const token = Cookies.get("token") || null;
 let decodedToken = "";
